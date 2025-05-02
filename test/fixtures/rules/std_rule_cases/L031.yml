@@ -1,0 +1,176 @@
+rule: L031
+
+test_pass_allow_alias_no_join:
+  # Aliases in a simple select statement with no JOIN should pass.
+  pass_str: |
+    SELECT a.col
+    FROM my_table AS a
+
+test_pass_allow_self_join_alias:
+  # L031 Allow self-joins
+  pass_str: |
+    SELECT
+      x.a,
+      x_2.b
+    FROM x
+    LEFT JOIN x AS x_2 ON x.foreign_key = x.foreign_key
+
+test_fail_avoid_aliases_1:
+  fail_str: |
+    SELECT
+      u.id,
+      c.first_name,
+      c.last_name,
+      COUNT(o.user_id)
+    FROM users AS u
+    JOIN customers AS c ON u.id = c.user_id
+    JOIN orders AS o ON u.id = o.user_id;
+    
+  fix_str: |
+    SELECT
+      users.id,
+      customers.first_name,
+      customers.last_name,
+      COUNT(orders.user_id)
+    FROM users
+    JOIN customers ON users.id = customers.user_id
+    JOIN orders ON users.id = orders.user_id;
+
+test_fail_avoid_aliases_2:
+  # L031 order by
+  fail_str: |
+    SELECT
+      u.id,
+      c.first_name,
+      c.last_name,
+      COUNT(o.user_id)
+    FROM users AS u
+    JOIN customers AS c ON u.id = c.user_id
+    JOIN orders AS o ON u.id = o.user_id
+    ORDER BY o.user_id DESC
+
+  fix_str: |
+    SELECT
+      users.id,
+      customers.first_name,
+      customers.last_name,
+      COUNT(orders.user_id)
+    FROM users
+    JOIN customers ON users.id = customers.user_id
+    JOIN orders ON users.id = orders.user_id
+    ORDER BY orders.user_id DESC
+
+test_fail_avoid_aliases_3:
+  # L031 order by identifier which is the same raw as an alias but refers to a column
+  fail_str: |
+    SELECT
+      u.id,
+      c.first_name,
+      c.last_name,
+      COUNT(o.user_id)
+    FROM users AS u
+    JOIN customers AS c ON u.id = c.user_id
+    JOIN orders AS o ON u.id = o.user_id
+    ORDER BY o DESC
+
+  fix_str: |
+    SELECT
+      users.id,
+      customers.first_name,
+      customers.last_name,
+      COUNT(orders.user_id)
+    FROM users
+    JOIN customers ON users.id = customers.user_id
+    JOIN orders ON users.id = orders.user_id
+    ORDER BY o DESC
+
+alias_single_char_identifiers:
+  fail_str: "SELECT b FROM tbl AS a"
+  fix_str: "SELECT b FROM tbl"
+
+alias_with_wildcard_identifier:
+  fail_str: "SELECT * FROM tbl AS a"
+  fix_str: "SELECT * FROM tbl"
+
+select_from_values:
+  pass_str: |
+    SELECT *
+    FROM VALUES(1, 2, 3)
+
+select_from_table_generator:
+  pass_str: |
+    SELECT *
+    FROM TABLE(
+        GENERATOR(
+            ROWCOUNT=>10000
+        )
+    )
+
+  configs:
+    core:
+      dialect: snowflake
+
+issue_635:
+  pass_str: |
+    SELECT
+        id::VARCHAR AS id,
+        obj:userid::VARCHAR AS user_id,
+        redemptions.value:awardedreceiptid::VARCHAR AS awarded_receipt_id
+    FROM
+        a,
+        LATERAL FLATTEN(INPUT => a.obj:redemptions) redemptions
+
+  configs:
+    core:
+      dialect: snowflake
+
+# This query was causing a runtime error in the rule.
+issue_239:
+  pass_str: |
+    WITH
+      confusion_matrix AS (
+      SELECT
+        expected_label,
+        commerce,
+        digital,
+        traditional_services
+      FROM
+        ML.CONFUSION_MATRIX(MODEL model3,
+          (
+          SELECT
+            *
+          FROM
+            table1
+          WHERE
+            training = 0 )))
+
+    SELECT
+      *,
+      commerce pct_commerce
+    FROM
+      confusion_matrix
+
+  configs:
+    core:
+      dialect: bigquery
+
+# The rule was removing the aliases from this query, causing incorrect behavior.
+# (Aliases may not only be used in select targets; they also influence whether
+# multiple joins to a table are independent or not).
+issue_610:
+  pass_str: |
+    SELECT aaaaaa.c
+    FROM aaaaaa
+    JOIN bbbbbb AS b ON b.a = aaaaaa.id
+    JOIN bbbbbb AS b2 ON b2.other = b.id
+
+issue_1589:
+  pass_str: |
+    SELECT *
+    FROM (SELECT RANDOM() AS v FROM (VALUES(1))) t1,
+         (SELECT MAX(repl) AS m FROM data) t2,
+         (SELECT * FROM data
+         WHERE repl=t2.m AND
+              rnd>=t.v
+         ORDER BY rnd
+         LIMIT 1)
