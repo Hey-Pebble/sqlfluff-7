@@ -168,3 +168,34 @@ issue_1589:
               rnd>=t.v
          order by rnd
          limit 1)
+
+tsql_no_join:
+  pass_str: |
+    SELECT a.[hello]
+    FROM
+      mytable AS a
+
+  configs:
+    core:
+      dialect: tsql
+
+tsql_with_join:
+  fail_str: |
+    SELECT a.[hello]
+    FROM
+      mytable AS a
+    JOIN
+      othertable AS b
+    ON a.id = b.id
+
+  fix_str: |
+    SELECT mytable.[hello]
+    FROM
+      mytable
+    JOIN
+      othertable AS b
+    ON mytable.id = b.id
+
+  configs:
+    core:
+      dialect: tsql
