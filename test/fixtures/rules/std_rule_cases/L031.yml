@@ -1,5 +1,17 @@
 rule: L031
 
+test_pass_without_join_alias:
+  pass_str: |
+    SELECT [hello]
+    FROM
+        mytable
+
+test_pass_with_alias_without_join:
+  pass_str: |
+    SELECT a.[hello]
+    FROM
+        mytable AS a
+
 test_pass_allow_self_join_alias:
   # L031 Allow self-joins
   pass_str: |
@@ -98,7 +110,7 @@ select_from_table_generator:
         generator(
             rowcount=>10000
         )
-    )
+    )  
 
   configs:
     core:
@@ -113,7 +125,6 @@ issue_635:
     from
         a,
         lateral flatten(input => a.obj:redemptions) redemptions
-
 
   configs:
     core:
