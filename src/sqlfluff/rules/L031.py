@@ -91,6 +91,12 @@ class Rule_L031(BaseRule):
                 for column_reference in clause.recursive_crawl("column_reference"):
                     column_reference_segments.append(column_reference)
 
+            # Check if there are any joins in the statement
+            if not any(
+                clause.get_child("join_clause") for clause in from_clause_and_after
+            ):
+                return None
+
             return (
                 self._lint_aliases_in_join(
                     base_table,
