@@ -3,28 +3,29 @@
 # computed by SQLFluff when running the tests. Please run
 # `python test/generate_parse_fixture_yml.py`  to generate them after adding or
 # altering SQL files.
-_hash: a44bc5bbe60224dec2fd3a31f8f662e74abbad7e321e5190c747dc13dabd67a5
+_hash: c1c6f7a9c3531b04f9555421c97077ccc02511eeaa58d93eaba58cecb880c72a
 file:
   batch:
-    statement:
+  - statement:
       select_statement:
         select_clause:
-        - keyword: select
+        - keyword: SELECT
         - select_clause_element:
             function:
               function_name:
                 keyword: string_agg
-              bracketed:
-              - start_bracket: (
-              - expression:
-                  column_reference:
-                  - identifier: t
-                  - dot: .
-                  - identifier: v
-              - comma: ','
-              - expression:
-                  literal: "'; '"
-              - end_bracket: )
+              function_contents:
+                bracketed:
+                - start_bracket: (
+                - expression:
+                    column_reference:
+                    - naked_identifier: t
+                    - dot: .
+                    - naked_identifier: v
+                - comma: ','
+                - expression:
+                    quoted_literal: "'; '"
+                - end_bracket: )
               within_group_clause:
               - keyword: within
               - keyword: group
@@ -34,21 +35,22 @@ file:
                   - keyword: order
                   - keyword: by
                   - column_reference:
-                      identifier: v
+                      naked_identifier: v
                   end_bracket: )
             alias_expression:
               keyword: as
-              identifier: column_name1
+              naked_identifier: column_name1
         - comma: ','
         - select_clause_element:
             function:
               function_name:
                 keyword: PERCENTILE_CONT
-              bracketed:
-                start_bracket: (
-                expression:
-                  literal: '0.5'
-                end_bracket: )
+              function_contents:
+                bracketed:
+                  start_bracket: (
+                  expression:
+                    numeric_literal: '0.5'
+                  end_bracket: )
               within_group_clause:
               - keyword: WITHIN
               - keyword: GROUP
@@ -58,32 +60,33 @@ file:
                   - keyword: ORDER
                   - keyword: BY
                   - column_reference:
-                    - identifier: t
+                    - naked_identifier: t
                     - dot: .
-                    - identifier: Rate
+                    - naked_identifier: Rate
                   end_bracket: )
               - keyword: OVER
               - bracketed:
                   start_bracket: (
-                  partition_by_clause:
+                  partitionby_clause:
                   - keyword: PARTITION
                   - keyword: BY
                   - column_reference:
-                      identifier: Name
+                      naked_identifier: Name
                   end_bracket: )
             alias_expression:
               keyword: AS
-              identifier: MedianCont
+              naked_identifier: MedianCont
         - comma: ','
         - select_clause_element:
             function:
               function_name:
                 keyword: PERCENTILE_DISC
-              bracketed:
-                start_bracket: (
-                expression:
-                  literal: '0.5'
-                end_bracket: )
+              function_contents:
+                bracketed:
+                  start_bracket: (
+                  expression:
+                    numeric_literal: '0.5'
+                  end_bracket: )
               within_group_clause:
               - keyword: WITHIN
               - keyword: GROUP
@@ -93,33 +96,66 @@ file:
                   - keyword: ORDER
                   - keyword: BY
                   - column_reference:
-                    - identifier: t
+                    - naked_identifier: t
                     - dot: .
-                    - identifier: Rate
+                    - naked_identifier: Rate
                   end_bracket: )
               - keyword: OVER
               - bracketed:
                   start_bracket: (
-                  partition_by_clause:
+                  partitionby_clause:
                   - keyword: PARTITION
                   - keyword: BY
                   - column_reference:
-                      identifier: Name
+                      naked_identifier: Name
                   end_bracket: )
             alias_expression:
               keyword: AS
-              identifier: MedianDisc
+              naked_identifier: MedianDisc
         from_clause:
           keyword: from
           from_expression:
             from_expression_element:
               table_expression:
                 table_reference:
-                  identifier: table1
+                  naked_identifier: table1
               alias_expression:
-                identifier: t
+                naked_identifier: t
         groupby_clause:
         - keyword: group
         - keyword: by
         - column_reference:
-            identifier: employee_id
+            naked_identifier: employee_id
+        having_clause:
+          keyword: HAVING
+          expression:
+          - function:
+              function_name:
+                function_name_identifier: MIN
+              function_contents:
+                bracketed:
+                  start_bracket: (
+                  expression:
+                    column_reference:
+                      quoted_identifier: '[ArrivalDt]'
+                  end_bracket: )
+          - comparison_operator:
+            - raw_comparison_operator: <
+            - raw_comparison_operator: '='
+          - function:
+              function_name:
+                function_name_identifier: MAX
+              function_contents:
+                bracketed:
+                  start_bracket: (
+                  expression:
+                    column_reference:
+                      quoted_identifier: '[DischargeDt]'
+                  end_bracket: )
+  - statement:
+      drop_table_statement:
+      - keyword: DROP
+      - keyword: TABLE
+      - table_reference:
+          hash_identifier: '#Mercury'
+      - statement_terminator: ;

@@ -1,5 +1,3 @@
-"""Implementation of Rule L031."""
-
 from collections import Counter, defaultdict
 from typing import Generator, NamedTuple
 
@@ -90,6 +88,10 @@ class Rule_L031(BaseRule):
                     from_expression_elements.append(from_expression_element)
                 for column_reference in clause.recursive_crawl("column_reference"):
                     column_reference_segments.append(column_reference)
+
+            # If no join is present, do not trigger the rule
+            if all(clause.type != "join_clause" for clause in from_clause_and_after):
+                return None
 
             return (
                 self._lint_aliases_in_join(

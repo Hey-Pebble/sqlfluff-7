@@ -4,27 +4,27 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.7"
+          python-version: "3.10"
 
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
-          pip install twine wheel --upgrade
+          pip install --upgrade pip tox
 
       - name: Build Distribution (Core)
-        run: python setup.py sdist bdist_wheel
+        run: tox -e build-dist
 
       - name: Publish Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
-          skip_existing: true
+          skip-existing: true

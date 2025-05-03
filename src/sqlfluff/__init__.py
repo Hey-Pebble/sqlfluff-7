@@ -1,29 +1,33 @@
 """Sqlfluff is a SQL linter for humans."""
+
 import sys
+from importlib import metadata
+
 import pytest
 
 # Expose the public API.
-from sqlfluff.api import lint, fix, parse, list_rules, list_dialects  # noqa: F401
+from sqlfluff.api import fix, lint, list_dialects, list_rules, parse
 
-# Set the version attribute of the library
-import pkg_resources
-import configparser
+__all__ = (
+    "lint",
+    "fix",
+    "parse",
+    "list_rules",
+    "list_dialects",
+)
 
 # Get the current version
-config = configparser.ConfigParser()
-config.read([pkg_resources.resource_filename("sqlfluff", "config.ini")])
-
-__version__ = config.get("sqlfluff", "version")
+__version__ = metadata.version("sqlfluff")
 
 # Check major python version
 if sys.version_info[0] < 3:
     raise Exception("Sqlfluff does not support Python 2. Please upgrade to Python 3.")
 # Check minor python version
-elif sys.version_info[1] < 6:
+elif sys.version_info[1] < 8:
     raise Exception(
-        "Sqlfluff %s only supports Python 3.6 and beyond. "
+        "Sqlfluff %s only supports Python 3.9 and beyond. "
         "Use an earlier version of sqlfluff or a later version of Python" % __version__
     )
 
 # Register helper functions to support variable introspection on failure.
-pytest.register_assert_rewrite("sqlfluff.testing")
+pytest.register_assert_rewrite("sqlfluff.utils.testing")

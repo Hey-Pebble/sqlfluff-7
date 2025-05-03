@@ -1,7 +1,18 @@
 rule: L031
 
+test_pass_no_alias_no_joins:
+  pass_str: |
+    SELECT [hello]
+    FROM
+        mytable
+
+test_pass_alias_no_joins:
+  pass_str: |
+    SELECT a.[hello]
+    FROM
+        mytable AS a
+
 test_pass_allow_self_join_alias:
-  # L031 Allow self-joins
   pass_str: |
     select
       x.a,
@@ -31,7 +42,6 @@ test_fail_avoid_aliases_1:
     JOIN orders on users.id = orders.user_id;
 
 test_fail_avoid_aliases_2:
-  # L031 order by
   fail_str: |
     SELECT
       u.id,
@@ -55,7 +65,6 @@ test_fail_avoid_aliases_2:
     order by orders.user_id desc
 
 test_fail_avoid_aliases_3:
-  # L031 order by identifier which is the same raw as an alias but refers to a column
   fail_str: |
     SELECT
       u.id,
@@ -114,12 +123,10 @@ issue_635:
         a,
         lateral flatten(input => a.obj:redemptions) redemptions
 
-
   configs:
     core:
       dialect: snowflake
 
-# This query was causing a runtime error in the rule.
 issue_239:
   pass_str: |
     WITH
@@ -148,9 +155,6 @@ issue_239:
     core:
       dialect: bigquery
 
-# The rule was removing the aliases from this query, causing incorrect behavior.
-# (Aliases may not only be used in select targets; they also influence whether
-# multiple joins to a table are independent or not).
 issue_610:
   pass_str: |
     SELECT aaaaaa.c

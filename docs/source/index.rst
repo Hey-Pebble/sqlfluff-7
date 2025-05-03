@@ -6,20 +6,20 @@ you're working with? Fluff is an extensible and modular linter designed
 to help you write good SQL and catch errors and bad SQL before it hits
 your database.
 
-.. note::
+Notable releases:
 
-    **SQLFluff** is still in an open alpha phase - expect the tool to
-    change significantly over the coming months, and expect potentially
-    non-backward compatible api changes to happen at any point. In
-    particular:
+* **1.0.x**: First *stable* release, no major changes to take advantage of a
+  point of relative stability.
+* **2.0.x**: Recode of rules, whitespace fixing consolidation,
+  :code:`sqlfluff format` and removal of support for dbt versions pre `1.1`.
+  Note, that this release brings with it some breaking changes to rule coding
+  and configuration, see :ref:`upgrading_2_0`.
+* **3.0.x**: :code:`sqlfluff fix` now defaults to *not* asking for confirmation
+  and the `--force` option was removed. Richer information returned by the
+  :code:`sqlfluff lint` command (although in a different structure to previous
+  versions). See :ref:`upgrading_3_0`.
 
-* **0.1.x** involved a major re-write of the parser, completely changing
-  the behaviour of the tool with respect to complex parsing.
-* **0.2.x** added templating support and a big restructure of rules
-  and changed how users might interact with SQLFluff on templated code.
-* **0.3.x** drops support for python 2.7 and 3.4, and also reworks the
-  handling of indentation linting in a potentially not backward
-  compatible way.
+For more detail on other releases, see our :ref:`releasenotes`.
 
 Want to see where and how people are using SQLFluff in their projects?
 Head over to :ref:`inthewildref` for inspiration.
@@ -31,15 +31,27 @@ To get started just install the package, make a sql file and then run
 SQLFluff and point it at the file. For more details or if you don't
 have python or pip already installed see :ref:`gettingstartedref`.
 
-.. code-block:: bash
+.. code-block:: text
 
     $ pip install sqlfluff
     $ echo "  SELECT a  +  b FROM tbl;  " > test.sql
-    $ sqlfluff lint test.sql
+    $ sqlfluff lint test.sql --dialect ansi
     == [test.sql] FAIL
-    L:   1 | P:   1 | L003 | Single indentation uses a number of spaces not a multiple of 4
-    L:   1 | P:  14 | L006 | Operators should be surrounded by a single space unless at the start/end of a line
-    L:   1 | P:  27 | L001 | Unnecessary trailing whitespace
+    L:   1 | P:   1 | LT01 | Expected only single space before 'SELECT' keyword.
+                           | Found '  '. [layout.spacing]
+    L:   1 | P:   1 | LT02 | First line should not be indented.
+                           | [layout.indent]
+    L:   1 | P:   1 | LT13 | Files must not begin with newlines or whitespace.
+                           | [layout.start_of_file]
+    L:   1 | P:  11 | LT01 | Expected only single space before binary operator '+'.
+                           | Found '  '. [layout.spacing]
+    L:   1 | P:  14 | LT01 | Expected only single space before naked identifier.
+                           | Found '  '. [layout.spacing]
+    L:   1 | P:  27 | LT01 | Unnecessary trailing whitespace at end of file.
+                           | [layout.spacing]
+    L:   1 | P:  27 | LT12 | Files must end with a single trailing newline.
+                           | [layout.end_of_file]
+    All Finished 📜 🎉!
 
 Contents
 ^^^^^^^^
@@ -49,18 +61,11 @@ Contents
    :caption: Documentation for SQLFluff:
 
    gettingstarted
-   realworld
-   vision
-   teamrollout
-   indentation
-   rules
-   dialects
-   production
-   configuration
-   architecture
-   cli
-   api
-   developingplugins
+   why_sqlfluff
+   guides/index
+   configuration/index
+   production/index
+   reference/index
    inthewild
    jointhecommunity
 

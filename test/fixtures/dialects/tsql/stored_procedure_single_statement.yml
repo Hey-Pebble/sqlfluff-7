@@ -3,33 +3,34 @@
 # computed by SQLFluff when running the tests. Please run
 # `python test/generate_parse_fixture_yml.py`  to generate them after adding or
 # altering SQL files.
-_hash: 05c85512b6faf6acfd23b4189629c90c2471900a538fb57fb36d7856fab5329a
+_hash: 2984e93623faaae6a60faf9d25a16ca1ee8a7ba1a7cbd5ca721929c54fb60bf5
 file:
   batch:
     create_procedure_statement:
     - keyword: CREATE
-    - binary_operator: OR
+    - keyword: OR
     - keyword: ALTER
     - keyword: PROCEDURE
     - object_reference:
-      - identifier: DBO
+      - naked_identifier: DBO
       - dot: .
-      - identifier: SP_ECDC_CASES_INTER
-    - base:
+      - naked_identifier: SP_ECDC_CASES_INTER
+    - procedure_parameter_list:
         bracketed:
         - start_bracket: (
         - parameter: '@Apple'
         - data_type:
-            identifier: '[int]'
+            data_type_identifier: '[int]'
         - comma: ','
         - parameter: '@Orange'
         - data_type:
-            identifier: varchar
-            bracketed:
-              start_bracket: (
-              expression:
-                literal: '100'
-              end_bracket: )
+            data_type_identifier: varchar
+            bracketed_arguments:
+              bracketed:
+                start_bracket: (
+                expression:
+                  numeric_literal: '100'
+                end_bracket: )
         - end_bracket: )
     - keyword: AS
     - procedure_statement:
@@ -38,256 +39,269 @@ file:
           - keyword: INSERT
           - keyword: INTO
           - table_reference:
-            - identifier: INTER
+            - naked_identifier: INTER
             - dot: .
-            - identifier: ECDC_CASES
+            - naked_identifier: ECDC_CASES
           - bracketed:
             - start_bracket: (
             - column_reference:
-                identifier: '[COUNTRY]'
+                quoted_identifier: '[COUNTRY]'
             - comma: ','
             - column_reference:
-                identifier: '[COUNTRY_CODE]'
+                quoted_identifier: '[COUNTRY_CODE]'
             - comma: ','
             - column_reference:
-                identifier: '[CONTINENT]'
+                quoted_identifier: '[CONTINENT]'
             - comma: ','
             - column_reference:
-                identifier: '[POPULATION]'
+                quoted_identifier: '[POPULATION]'
             - comma: ','
             - column_reference:
-                identifier: '[INDICATOR]'
+                quoted_identifier: '[INDICATOR]'
             - comma: ','
             - column_reference:
-                identifier: '[WEEKLY_COUNT]'
+                quoted_identifier: '[WEEKLY_COUNT]'
             - comma: ','
             - column_reference:
-                identifier: '[YEAR_WEEK]'
+                quoted_identifier: '[YEAR_WEEK]'
             - comma: ','
             - column_reference:
-                identifier: '[WEEK_START]'
+                quoted_identifier: '[WEEK_START]'
             - comma: ','
             - column_reference:
-                identifier: '[WEEK_END]'
+                quoted_identifier: '[WEEK_END]'
             - comma: ','
             - column_reference:
-                identifier: '[RATE_14_DAY]'
+                quoted_identifier: '[RATE_14_DAY]'
             - comma: ','
             - column_reference:
-                identifier: '[CUMULATIVE_COUNT]'
+                quoted_identifier: '[CUMULATIVE_COUNT]'
             - comma: ','
             - column_reference:
-                identifier: '[SOURCE]'
+                quoted_identifier: '[SOURCE]'
             - end_bracket: )
           - select_statement:
               select_clause:
               - keyword: SELECT
               - select_clause_element:
                   column_reference:
-                    identifier: '[COUNTRY]'
+                    quoted_identifier: '[COUNTRY]'
               - comma: ','
               - select_clause_element:
                   column_reference:
-                    identifier: '[COUNTRY_CODE]'
+                    quoted_identifier: '[COUNTRY_CODE]'
               - comma: ','
               - select_clause_element:
                   column_reference:
-                    identifier: '[CONTINENT]'
+                    quoted_identifier: '[CONTINENT]'
               - comma: ','
               - select_clause_element:
                   function:
                     function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        column_reference:
-                          identifier: '[POPULATION]'
-                      keyword: AS
-                      data_type:
-                        identifier: BIGINT
-                      end_bracket: )
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          column_reference:
+                            quoted_identifier: '[POPULATION]'
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: BIGINT
+                        end_bracket: )
                   alias_expression:
                     keyword: AS
-                    identifier: '[POPULATION]'
+                    quoted_identifier: '[POPULATION]'
               - comma: ','
               - select_clause_element:
                   column_reference:
-                    identifier: '[INDICATOR]'
+                    quoted_identifier: '[INDICATOR]'
               - comma: ','
               - select_clause_element:
                   function:
                     function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        column_reference:
-                          identifier: '[WEEKLY_COUNT]'
-                      keyword: AS
-                      data_type:
-                        identifier: BIGINT
-                      end_bracket: )
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          column_reference:
+                            quoted_identifier: '[WEEKLY_COUNT]'
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: BIGINT
+                        end_bracket: )
                   alias_expression:
                     keyword: AS
-                    identifier: '[WEEKLY_COUNT]'
+                    quoted_identifier: '[WEEKLY_COUNT]'
               - comma: ','
               - select_clause_element:
                   column_reference:
-                    identifier: '[YEAR_WEEK]'
+                    quoted_identifier: '[YEAR_WEEK]'
               - comma: ','
               - select_clause_element:
                   function:
                     function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        function:
-                          function_name:
-                            identifier: '[dbo]'
-                            dot: .
-                            function_name_identifier: '[CONVERT_ISO_WEEK_TO_DATETIME]'
-                          bracketed:
-                          - start_bracket: (
-                          - expression:
-                              function:
-                                function_name:
-                                  function_name_identifier: LEFT
-                                bracketed:
-                                - start_bracket: (
-                                - expression:
-                                    column_reference:
-                                      identifier: YEAR_WEEK
-                                - comma: ','
-                                - expression:
-                                    literal: '4'
-                                - end_bracket: )
-                          - comma: ','
-                          - expression:
-                              function:
-                                function_name:
-                                  function_name_identifier: RIGHT
-                                bracketed:
-                                - start_bracket: (
-                                - expression:
-                                    column_reference:
-                                      identifier: YEAR_WEEK
-                                - comma: ','
-                                - expression:
-                                    literal: '2'
-                                - end_bracket: )
-                          - end_bracket: )
-                      keyword: AS
-                      data_type:
-                        identifier: DATE
-                      end_bracket: )
-                  alias_expression:
-                    keyword: AS
-                    identifier: '[WEEK_START]'
-              - comma: ','
-              - select_clause_element:
-                  function:
-                    function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        function:
-                          function_name:
-                            identifier: '[dbo]'
-                            dot: .
-                            function_name_identifier: '[WEEK_END]'
-                          bracketed:
-                            start_bracket: (
-                            expression:
-                              function:
-                                function_name:
-                                  identifier: '[dbo]'
-                                  dot: .
-                                  function_name_identifier: '[CONVERT_ISO_WEEK_TO_DATETIME]'
-                                bracketed:
-                                - start_bracket: (
-                                - expression:
-                                    function:
-                                      function_name:
-                                        function_name_identifier: LEFT
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          function:
+                            function_name:
+                              quoted_identifier: '[dbo]'
+                              dot: .
+                              function_name_identifier: '[CONVERT_ISO_WEEK_TO_DATETIME]'
+                            function_contents:
+                              bracketed:
+                              - start_bracket: (
+                              - expression:
+                                  function:
+                                    function_name:
+                                      keyword: LEFT
+                                    function_contents:
                                       bracketed:
                                       - start_bracket: (
                                       - expression:
                                           column_reference:
-                                            identifier: YEAR_WEEK
+                                            naked_identifier: YEAR_WEEK
                                       - comma: ','
                                       - expression:
-                                          literal: '4'
+                                          numeric_literal: '4'
                                       - end_bracket: )
-                                - comma: ','
-                                - expression:
-                                    function:
-                                      function_name:
-                                        function_name_identifier: RIGHT
+                              - comma: ','
+                              - expression:
+                                  function:
+                                    function_name:
+                                      keyword: RIGHT
+                                    function_contents:
                                       bracketed:
                                       - start_bracket: (
                                       - expression:
                                           column_reference:
-                                            identifier: YEAR_WEEK
+                                            naked_identifier: YEAR_WEEK
                                       - comma: ','
                                       - expression:
-                                          literal: '2'
+                                          numeric_literal: '2'
                                       - end_bracket: )
-                                - end_bracket: )
-                            end_bracket: )
-                      keyword: AS
-                      data_type:
-                        identifier: DATE
-                      end_bracket: )
+                              - end_bracket: )
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: DATE
+                        end_bracket: )
                   alias_expression:
                     keyword: AS
-                    identifier: '[WEEK_END]'
+                    quoted_identifier: '[WEEK_START]'
               - comma: ','
               - select_clause_element:
                   function:
                     function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        column_reference:
-                          identifier: '[RATE_14_DAY]'
-                      keyword: AS
-                      data_type:
-                        identifier: FLOAT
-                      end_bracket: )
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          function:
+                            function_name:
+                              quoted_identifier: '[dbo]'
+                              dot: .
+                              function_name_identifier: '[WEEK_END]'
+                            function_contents:
+                              bracketed:
+                                start_bracket: (
+                                expression:
+                                  function:
+                                    function_name:
+                                      quoted_identifier: '[dbo]'
+                                      dot: .
+                                      function_name_identifier: '[CONVERT_ISO_WEEK_TO_DATETIME]'
+                                    function_contents:
+                                      bracketed:
+                                      - start_bracket: (
+                                      - expression:
+                                          function:
+                                            function_name:
+                                              keyword: LEFT
+                                            function_contents:
+                                              bracketed:
+                                              - start_bracket: (
+                                              - expression:
+                                                  column_reference:
+                                                    naked_identifier: YEAR_WEEK
+                                              - comma: ','
+                                              - expression:
+                                                  numeric_literal: '4'
+                                              - end_bracket: )
+                                      - comma: ','
+                                      - expression:
+                                          function:
+                                            function_name:
+                                              keyword: RIGHT
+                                            function_contents:
+                                              bracketed:
+                                              - start_bracket: (
+                                              - expression:
+                                                  column_reference:
+                                                    naked_identifier: YEAR_WEEK
+                                              - comma: ','
+                                              - expression:
+                                                  numeric_literal: '2'
+                                              - end_bracket: )
+                                      - end_bracket: )
+                                end_bracket: )
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: DATE
+                        end_bracket: )
                   alias_expression:
                     keyword: AS
-                    identifier: '[RATE_14_DAY]'
+                    quoted_identifier: '[WEEK_END]'
               - comma: ','
               - select_clause_element:
                   function:
                     function_name:
-                      function_name_identifier: CAST
-                    bracketed:
-                      start_bracket: (
-                      expression:
-                        column_reference:
-                          identifier: '[CUMULATIVE_COUNT]'
-                      keyword: AS
-                      data_type:
-                        identifier: BIGINT
-                      end_bracket: )
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          column_reference:
+                            quoted_identifier: '[RATE_14_DAY]'
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: FLOAT
+                        end_bracket: )
                   alias_expression:
                     keyword: AS
-                    identifier: '[CUMULATIVE_COUNT]'
+                    quoted_identifier: '[RATE_14_DAY]'
+              - comma: ','
+              - select_clause_element:
+                  function:
+                    function_name:
+                      keyword: CAST
+                    function_contents:
+                      bracketed:
+                        start_bracket: (
+                        expression:
+                          column_reference:
+                            quoted_identifier: '[CUMULATIVE_COUNT]'
+                        keyword: AS
+                        data_type:
+                          data_type_identifier: BIGINT
+                        end_bracket: )
+                  alias_expression:
+                    keyword: AS
+                    quoted_identifier: '[CUMULATIVE_COUNT]'
               - comma: ','
               - select_clause_element:
                   column_reference:
-                    identifier: '[SOURCE]'
+                    quoted_identifier: '[SOURCE]'
               from_clause:
                 keyword: FROM
                 from_expression:
                   from_expression_element:
                     table_expression:
                       table_reference:
-                      - identifier: STAGE
+                      - naked_identifier: STAGE
                       - dot: .
-                      - identifier: ECDC_CASES
+                      - naked_identifier: ECDC_CASES
