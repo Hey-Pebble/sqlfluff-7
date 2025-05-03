@@ -114,12 +114,10 @@ issue_635:
         a,
         lateral flatten(input => a.obj:redemptions) redemptions
 
-
   configs:
     core:
       dialect: snowflake
 
-# This query was causing a runtime error in the rule.
 issue_239:
   pass_str: |
     WITH
@@ -138,7 +136,6 @@ issue_239:
             table1
           WHERE
             training = 0 )))
-
     SELECT
       *,
       commerce pct_commerce
@@ -148,9 +145,6 @@ issue_239:
     core:
       dialect: bigquery
 
-# The rule was removing the aliases from this query, causing incorrect behavior.
-# (Aliases may not only be used in select targets; they also influence whether
-# multiple joins to a table are independent or not).
 issue_610:
   pass_str: |
     SELECT aaaaaa.c
@@ -168,3 +162,9 @@ issue_1589:
               rnd>=t.v
          order by rnd
          limit 1)
+
+# New test case for issue EVAL-19
+test_pass_no_join_with_alias:
+  pass_str: |
+    SELECT a.[hello]
+    FROM mytable AS a
